@@ -235,16 +235,17 @@
         transform: translate(-50%, -50%);
         color: white;
         text-align: center;
-        z-index: 1;
-        /* Behind sidebar (999) but above root (0) */
+        z-index: 0;
+        /* Behind everything interactive */
         pointer-events: none;
         width: 100%;
         padding: 0 20px;
+        opacity: 0.5;
       }
 
       #mobile-welcome h1 {
         font-family: 'GentleMonsterSerif', serif;
-        font-size: 2rem;
+        font-size: 1.5rem;
         margin-bottom: 10px;
       }
 
@@ -255,11 +256,13 @@
         letter-spacing: 1px;
       }
     }
+
+    /* Initially hide nothing via CSS to avoid hiding loaders. JS will handle it. */
   </style>
 
   <div id="mobile-welcome">
     <h1>GENTLE MONSTER</h1>
-    <p>TAP MENU AND START ENGINE</p>
+    <p>TAP MENU TO CONFIGURE</p>
   </div>
 
   <script>
@@ -279,11 +282,20 @@
         isOpen = !isOpen;
         if (isOpen) {
           sidebar.style.display = 'flex';
+          sidebar.style.position = 'fixed'; // Ensure fixed when open
+          sidebar.style.inset = '0';
+          sidebar.style.zIndex = '999';
+          sidebar.style.background = 'rgba(0,0,0,0.95)';
+          sidebar.style.flexDirection = 'column';
+          sidebar.style.padding = '40px 20px 100px 20px';
+          sidebar.style.overflowY = 'auto'; // Scrollable
+
           sidebar.style.animation = 'fadeIn 0.3s';
           menuBtn.innerHTML = '<span>CLOSE</span>';
           menuBtn.style.background = '#333';
           menuBtn.style.color = 'white';
         } else {
+          // Hide it again
           sidebar.style.display = 'none';
           menuBtn.innerHTML = '<span>MENU</span>';
           menuBtn.style.background = 'white';
@@ -293,14 +305,42 @@
 
       menuBtn.addEventListener('click', toggleMenu);
 
-      // 3. Robust Element Discovery (MutationObserver)
+      // 3. Smart Element Discovery (MutationObserver)
       const observer = new MutationObserver((mutations, obs) => {
         const rootDiv = document.querySelector('#root > div');
-        if (rootDiv && rootDiv.firstChild) {
-          sidebar = rootDiv.firstChild;
-          // Sidebar found! Stop observing.
-          obs.disconnect();
-          console.log("GM Mobile: Sidebar connected");
+        if (rootDiv && rootDiv.children.length > 0) {
+          // Heuristic: Find the child that has "PROMPT" or "VISION" text
+          // This avoids hiding the "Content" area or a "Loader"
+          const children = Array.from(rootDiv.children);
+          const found = children.find(child => {
+            const text = child.innerText || "";
+            return (text.includes('PROMPT') || text.includes('VISION') || text.includes('CREATE'));
+          });
+
+          if (found) {
+            sidebar = found;
+            console.log("GM Mobile: Sidebar Identified via Text");
+
+            // If on mobile, hide it immediately
+            if (window.innerWidth <= 768) {
+              sidebar.style.display = 'none';
+            }
+
+            obs.disconnect();
+          } else {
+            // Fallback: If 2 children, assume first is sidebar
+            if (children.length >= 2) {
+              // check if sidebar is ALREADY captured
+              if (!sidebar) {
+                sidebar = children[0];
+                // Only hide if mobile
+                if (window.innerWidth <= 768) {
+                  sidebar.style.display = 'none';
+                }
+              }
+              // We don't disconnect yet, maybe text loads later
+            }
+          }
         }
       });
 
@@ -309,17 +349,10 @@
         subtree: true
       });
 
-      // Fallback check
-      setTimeout(() => {
-        if (!sidebar) {
-          const rootDiv = document.querySelector('#root > div');
-          if (rootDiv) sidebar = rootDiv.firstChild;
-        }
-      }, 2000);
-
     })();
   </script>
   <div id="root"></div>
 </body>
 
 </html>
+```
