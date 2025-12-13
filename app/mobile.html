@@ -51,79 +51,74 @@
             font-style: normal;
         }
 
-        /* === FIXED VERTICAL SPLIT LAYOUT === */
+        /* === PURE NATURAL MOBILE LAYOUT === */
 
-        /* 1. Main Container: Fixed Full Viewport Height */
+        /* 1. Reset Root & Body for Scrolling */
+        html,
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 2. Main Flex Container */
         #root>div {
             display: flex !important;
             flex-direction: column !important;
-            height: 100dvh !important;
-            /* Dynamic Viewport Height */
-            width: 100vw !important;
-            overflow: hidden !important;
+            height: auto !important;
+            /* Let content dictate height */
+            min-height: 100vh;
+            overflow: visible !important;
+            /* No internal scrollbars */
             position: relative;
         }
 
-        /* 2. Image Area (Normally last child) -> TOP 45% */
+        /* 3. Image Area (Visual Top) */
         #root>div>div:last-child {
             display: flex !important;
             order: 1 !important;
-            flex: 0 0 45% !important;
-            /* Fixed 45% height */
             width: 100% !important;
+            height: 400px !important;
+            /* Fixed reasonable height */
+            flex-shrink: 0 !important;
             border-bottom: 1px solid #222;
             z-index: 10;
             background: #000;
             position: relative;
+            /* Stick to flow */
         }
 
-        /* 3. Controls Area (Normally first child) -> BOTTOM 55% (Scrollable) */
+        /* 4. Controls Area (Visual Bottom) */
         #root>div>div:first-child {
             display: flex !important;
             order: 2 !important;
-            flex: 1 !important;
-            /* Take remaining space */
+            flex: 1 0 auto !important;
+            /* Grow and shrink */
             width: 100% !important;
+            height: auto !important;
             background: #000;
             flex-direction: column !important;
-            padding: 20px 20px 120px 20px !important;
-            /* HUGE bottom padding for safety */
-            overflow-y: auto !important;
-            /* Scrollable */
-            -webkit-overflow-scrolling: touch;
+            padding: 20px 20px 150px 20px !important;
+            /* Massive bottom padding for safety */
+            overflow: visible !important;
             border-right: none !important;
         }
 
-        /* Typography Reset for Mobile */
-        html,
-        body {
-            font-size: 14px;
-        }
-
-        /* === BUTTON RESCUE SQUAD === */
-        /* Use specificity to force buttons to look "Tappable" and visible */
-        #root button {
-            opacity: 1 !important;
-            display: inline-flex !important;
-            min-height: 48px !important;
-            /* Finger size */
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Make the primary actions pop if possible (heuristic) */
-        /* Assuming standard tailwind buttons might be hidden or black-on-black */
-
-        /* Improve Input Visibility */
+        /* Ensure Inputs are visible */
         input,
         textarea,
         select {
+            max-width: 100%;
+            min-height: 48px;
             background: #111 !important;
             border: 1px solid #333 !important;
             color: white !important;
-            padding: 10px !important;
-            min-height: 44px;
-            border-radius: 8px !important;
+        }
+
+        /* Reveal any hidden standard elements */
+        * {
+            max-width: 100vw;
+        }
         }
     </style>
 
