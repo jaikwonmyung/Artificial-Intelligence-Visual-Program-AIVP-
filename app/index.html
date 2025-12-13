@@ -218,49 +218,106 @@
     })();
   </script>
 
-  <!-- Mobile Drawer Logic -->
+  <!-- Mobile Drawer Logic & UI -->
+  <style>
+    /* Mobile Welcome Placeholder */
+    #mobile-welcome {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      #mobile-welcome {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        z-index: 1;
+        /* Behind sidebar (999) but above root (0) */
+        pointer-events: none;
+        width: 100%;
+        padding: 0 20px;
+      }
+
+      #mobile-welcome h1 {
+        font-family: 'GentleMonsterSerif', serif;
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      #mobile-welcome p {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        color: #888;
+        letter-spacing: 1px;
+      }
+    }
+  </style>
+
+  <div id="mobile-welcome">
+    <h1>GENTLE MONSTER</h1>
+    <p>TAP MENU AND START ENGINE</p>
+  </div>
+
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Create Floating Button
+    (function () {
+      // 1. Create Floating Button immediately
       const menuBtn = document.createElement('button');
       menuBtn.id = 'mobile-menu-btn';
       menuBtn.innerHTML = '<span>MENU</span>';
       document.body.appendChild(menuBtn);
 
       let isOpen = false;
+      let sidebar = null;
 
-      // Wait for React to mount and give us elements
-      setTimeout(() => {
-        const rootDiv = document.querySelector('#root > div');
-        if (!rootDiv) return;
-
-        const sidebar = rootDiv.firstChild;
+      // 2. Function to toggle sidebar
+      function toggleMenu() {
         if (!sidebar) return;
+        isOpen = !isOpen;
+        if (isOpen) {
+          sidebar.style.display = 'flex';
+          sidebar.style.animation = 'fadeIn 0.3s';
+          menuBtn.innerHTML = '<span>CLOSE</span>';
+          menuBtn.style.background = '#333';
+          menuBtn.style.color = 'white';
+        } else {
+          sidebar.style.display = 'none';
+          menuBtn.innerHTML = '<span>MENU</span>';
+          menuBtn.style.background = 'white';
+          menuBtn.style.color = 'black';
+        }
+      }
 
-        // Toggle Function
-        menuBtn.addEventListener('click', () => {
-          isOpen = !isOpen;
-          if (isOpen) {
-            sidebar.style.display = 'flex';
-            sidebar.style.animation = 'fadeIn 0.3s';
-            menuBtn.innerHTML = '<span>CLOSE</span>';
-            menuBtn.style.background = '#333';
-            menuBtn.style.color = 'white';
-          } else {
-            sidebar.style.display = 'none';
-            menuBtn.innerHTML = '<span>MENU</span>';
-            menuBtn.style.background = 'white';
-            menuBtn.style.color = 'black';
-          }
-        });
+      menuBtn.addEventListener('click', toggleMenu);
 
-        // Close when clicking inside content (optional)
-        // sidebar.addEventListener('click', (e) => {
-        //   if(e.target === sidebar) menuBtn.click();
-        // });
+      // 3. Robust Element Discovery (MutationObserver)
+      const observer = new MutationObserver((mutations, obs) => {
+        const rootDiv = document.querySelector('#root > div');
+        if (rootDiv && rootDiv.firstChild) {
+          sidebar = rootDiv.firstChild;
+          // Sidebar found! Stop observing.
+          obs.disconnect();
+          console.log("GM Mobile: Sidebar connected");
+        }
+      });
 
-      }, 1000); // 1 sec delay to ensure React loads
-    });
+      observer.observe(document.getElementById('root'), {
+        childList: true,
+        subtree: true
+      });
+
+      // Fallback check
+      setTimeout(() => {
+        if (!sidebar) {
+          const rootDiv = document.querySelector('#root > div');
+          if (rootDiv) sidebar = rootDiv.firstChild;
+        }
+      }, 2000);
+
+    })();
   </script>
   <div id="root"></div>
 </body>
