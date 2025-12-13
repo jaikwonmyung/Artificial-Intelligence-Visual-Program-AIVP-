@@ -30,6 +30,12 @@
             padding-bottom: env(safe-area-inset-bottom);
             -webkit-user-select: none;
             user-select: none;
+            background-color: #000000;
+            color: #e4e4e7;
+            font-family: 'GentleMonsterSerif', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            /* Prevent body scroll, handle inside div */
         }
 
         input,
@@ -45,72 +51,79 @@
             font-style: normal;
         }
 
-        body {
-            font-family: 'GentleMonsterSerif', sans-serif;
-            background-color: #000000;
-            color: #e4e4e7;
-        }
+        /* === FIXED VERTICAL SPLIT LAYOUT === */
 
-        /* === MOBILE SCROLL LAYOUT === */
-
-        /* 1. Main Container: Natural Flow */
+        /* 1. Main Container: Fixed Full Viewport Height */
         #root>div {
             display: flex !important;
             flex-direction: column !important;
-            height: auto !important;
-            /* KEY: Don't force 100vh */
-            min-height: 100vh;
-            overflow-y: auto !important;
+            height: 100dvh !important;
+            /* Dynamic Viewport Height */
+            width: 100vw !important;
+            overflow: hidden !important;
             position: relative;
         }
 
-        /* 2. Image Area (Visual Top) */
+        /* 2. Image Area (Normally last child) -> TOP 45% */
         #root>div>div:last-child {
             display: flex !important;
             order: 1 !important;
+            flex: 0 0 45% !important;
+            /* Fixed 45% height */
             width: 100% !important;
-            height: 50vh !important;
-            /* Take half screen */
-            min-height: 350px;
-            /* Minimum size for visibility */
-            flex-shrink: 0 !important;
             border-bottom: 1px solid #222;
             z-index: 10;
             background: #000;
+            position: relative;
         }
 
-        /* 3. Controls Area (Visual Bottom) */
+        /* 3. Controls Area (Normally first child) -> BOTTOM 55% (Scrollable) */
         #root>div>div:first-child {
             display: flex !important;
             order: 2 !important;
+            flex: 1 !important;
+            /* Take remaining space */
             width: 100% !important;
-            height: auto !important;
-            /* Grow to fit content */
-            border-right: none !important;
             background: #000;
             flex-direction: column !important;
-            padding: 20px 20px 80px 20px !important;
-            /* Bottom padding for scroll */
-            overflow: visible !important;
+            padding: 20px 20px 120px 20px !important;
+            /* HUGE bottom padding for safety */
+            overflow-y: auto !important;
+            /* Scrollable */
+            -webkit-overflow-scrolling: touch;
+            border-right: none !important;
         }
 
         /* Typography Reset for Mobile */
         html,
         body {
             font-size: 14px;
-            /* Ensure page itself can scroll if needed */
-            overflow-y: auto;
-            height: auto;
         }
 
-        /* Ensure inputs don't overflow */
+        /* === BUTTON RESCUE SQUAD === */
+        /* Use specificity to force buttons to look "Tappable" and visible */
+        #root button {
+            opacity: 1 !important;
+            display: inline-flex !important;
+            min-height: 48px !important;
+            /* Finger size */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Make the primary actions pop if possible (heuristic) */
+        /* Assuming standard tailwind buttons might be hidden or black-on-black */
+
+        /* Improve Input Visibility */
         input,
-        button,
-        select,
-        textarea {
-            max-width: 100%;
+        textarea,
+        select {
+            background: #111 !important;
+            border: 1px solid #333 !important;
+            color: white !important;
+            padding: 10px !important;
             min-height: 44px;
-            /* Touch friendly */
+            border-radius: 8px !important;
         }
     </style>
 
