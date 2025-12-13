@@ -51,52 +51,56 @@
             color: #e4e4e7;
         }
 
-        /* === MOBILE VERTICAL STACK LAYOUT === */
+        /* === MOBILE SCROLL LAYOUT === */
 
-        /* 1. Main Container: Single Column, Fixed Height */
+        /* 1. Main Container: Natural Flow */
         #root>div {
             display: flex !important;
             flex-direction: column !important;
-            height: 100vh !important;
-            overflow: hidden !important;
+            height: auto !important;
+            /* KEY: Don't force 100vh */
+            min-height: 100vh;
+            overflow-y: auto !important;
             position: relative;
         }
 
-        /* 2. Image Area (Normally last child) -> MOVED TO TOP */
+        /* 2. Image Area (Visual Top) */
         #root>div>div:last-child {
             display: flex !important;
             order: 1 !important;
-            /* Visual Order: 1st */
             width: 100% !important;
-            height: 55vh !important;
-            /* Top 55% of screen */
-            padding: 0 !important;
+            height: 50vh !important;
+            /* Take half screen */
+            min-height: 350px;
+            /* Minimum size for visibility */
             flex-shrink: 0 !important;
             border-bottom: 1px solid #222;
             z-index: 10;
+            background: #000;
         }
 
-        /* 3. Controls Area (Normally first child) -> MOVED TO BOTTOM */
+        /* 3. Controls Area (Visual Bottom) */
         #root>div>div:first-child {
             display: flex !important;
             order: 2 !important;
-            /* Visual Order: 2nd */
             width: 100% !important;
-            height: 45vh !important;
-            /* Bottom 45% of screen */
+            height: auto !important;
+            /* Grow to fit content */
             border-right: none !important;
             background: #000;
             flex-direction: column !important;
-            padding: 20px !important;
-            overflow-y: auto !important;
-            /* Scrollable controls */
-            -webkit-overflow-scrolling: touch;
+            padding: 20px 20px 80px 20px !important;
+            /* Bottom padding for scroll */
+            overflow: visible !important;
         }
 
         /* Typography Reset for Mobile */
         html,
         body {
             font-size: 14px;
+            /* Ensure page itself can scroll if needed */
+            overflow-y: auto;
+            height: auto;
         }
 
         /* Ensure inputs don't overflow */
