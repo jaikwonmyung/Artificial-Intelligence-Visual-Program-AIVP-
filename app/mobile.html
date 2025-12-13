@@ -51,40 +51,46 @@
             color: #e4e4e7;
         }
 
-        /* MOBILE DRAWER CSS - Aggressive Overrides */
+        /* === MOBILE VERTICAL STACK LAYOUT === */
 
-        /* 1. Main Container: Keep flex but hide sidebar by default */
+        /* 1. Main Container: Single Column, Fixed Height */
         #root>div {
-            position: relative;
-            height: 100vh;
-            overflow: hidden;
+            display: flex !important;
             flex-direction: column !important;
-            /* Force stack just in case */
+            height: 100vh !important;
+            overflow: hidden !important;
+            position: relative;
         }
 
-        /* 2. Sidebar (Hidden by default, becomes Modal) */
-        #root>div>div:first-child {
-            display: none;
-            /* JS will toggle this to 'flex' */
-            position: fixed;
-            inset: 0;
-            z-index: 999;
-            background: rgba(0, 0, 0, 0.98);
-            width: 100% !important;
-            height: 100% !important;
-            max-height: none !important;
-            flex-direction: column;
-            padding: 60px 20px 100px 20px;
-            overflow-y: auto;
-            /* Scrollable content */
-            border: none !important;
-        }
-
-        /* 3. Content (Full Screen Image) */
+        /* 2. Image Area (Normally last child) -> MOVED TO TOP */
         #root>div>div:last-child {
+            display: flex !important;
+            order: 1 !important;
+            /* Visual Order: 1st */
             width: 100% !important;
-            height: 100% !important;
+            height: 55vh !important;
+            /* Top 55% of screen */
             padding: 0 !important;
+            flex-shrink: 0 !important;
+            border-bottom: 1px solid #222;
+            z-index: 10;
+        }
+
+        /* 3. Controls Area (Normally first child) -> MOVED TO BOTTOM */
+        #root>div>div:first-child {
+            display: flex !important;
+            order: 2 !important;
+            /* Visual Order: 2nd */
+            width: 100% !important;
+            height: 45vh !important;
+            /* Bottom 45% of screen */
+            border-right: none !important;
+            background: #000;
+            flex-direction: column !important;
+            padding: 20px !important;
+            overflow-y: auto !important;
+            /* Scrollable controls */
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Typography Reset for Mobile */
@@ -93,61 +99,14 @@
             font-size: 14px;
         }
 
+        /* Ensure inputs don't overflow */
         input,
-        button {
+        button,
+        select,
+        textarea {
             max-width: 100%;
-        }
-
-        /* Floating Action Button Style */
-        #mobile-menu-btn {
-            display: flex;
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: white;
-            color: black;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 30px;
-            font-family: 'GentleMonsterSerif', serif;
-            font-weight: bold;
-            font-size: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        /* Welcome Placeholder */
-        #mobile-welcome {
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            text-align: center;
-            z-index: 0;
-            pointer-events: none;
-            width: 100%;
-            padding: 0 20px;
-            opacity: 0.6;
-        }
-
-        #mobile-welcome h1 {
-            font-family: 'GentleMonsterSerif', serif;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        #mobile-welcome p {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.7rem;
-            color: #888;
-            letter-spacing: 2px;
+            min-height: 44px;
+            /* Touch friendly */
         }
     </style>
 
@@ -167,7 +126,7 @@
 </head>
 
 <body>
-    <!-- Password Protection (Optional for mobile? User wanted it kept) -->
+    <!-- Password Protection -->
     <div id="auth-overlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
         <div
@@ -189,14 +148,8 @@
             INCORRECT PASSWORD</div>
     </div>
 
-    <div id="mobile-welcome">
-        <h1>GENTLE MONSTER</h1>
-        <p>TAP MENU TO CONFIGURE</p>
-    </div>
-
     <script>
         (function () {
-            // --- AUTH LOGIC ---
             const overlay = document.getElementById('auth-overlay');
             const input = document.getElementById('pass-input');
             const btn = document.getElementById('auth-btn');
@@ -225,66 +178,6 @@
                 if (e.key === 'Enter') checkPass();
             });
             btn.addEventListener('click', checkPass);
-
-
-            // --- DRAWER LOGIC ---
-            const menuBtn = document.createElement('button');
-            menuBtn.id = 'mobile-menu-btn';
-            menuBtn.innerHTML = '<span>MENU</span>';
-            document.body.appendChild(menuBtn);
-
-            let isOpen = false;
-            let sidebar = null;
-
-            function toggleMenu() {
-                if (!sidebar) return;
-                isOpen = !isOpen;
-                if (isOpen) {
-                    sidebar.style.display = 'flex';
-                    sidebar.style.animation = 'fadeIn 0.3s';
-                    menuBtn.innerHTML = '<span>CLOSE</span>';
-                    menuBtn.style.background = '#333';
-                    menuBtn.style.color = 'white';
-                } else {
-                    sidebar.style.display = 'none';
-                    menuBtn.innerHTML = '<span>MENU</span>';
-                    menuBtn.style.background = 'white';
-                    menuBtn.style.color = 'black';
-                }
-            }
-
-            menuBtn.addEventListener('click', toggleMenu);
-
-            const observer = new MutationObserver((mutations, obs) => {
-                const rootDiv = document.querySelector('#root > div');
-                if (rootDiv && rootDiv.children.length > 0) {
-                    // Heuristic for Sidebar
-                    const children = Array.from(rootDiv.children);
-                    const found = children.find(child => {
-                        const text = child.innerText || "";
-                        return (text.includes('PROMPT') || text.includes('VISION') || text.includes('CREATE'));
-                    });
-
-                    if (found) {
-                        sidebar = found;
-                        sidebar.style.display = 'none'; // Init hidden
-                        obs.disconnect();
-                    } else {
-                        if (children.length >= 2) {
-                            if (!sidebar) {
-                                sidebar = children[0];
-                                sidebar.style.display = 'none'; // Init hidden
-                            }
-                        }
-                    }
-                }
-            });
-
-            observer.observe(document.getElementById('root'), {
-                childList: true,
-                subtree: true
-            });
-
         })();
     </script>
     <div id="root"></div>
