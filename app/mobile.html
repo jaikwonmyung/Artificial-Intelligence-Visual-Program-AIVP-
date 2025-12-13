@@ -119,6 +119,27 @@
         * {
             max-width: 100vw;
         }
+
+        /* HIDE STATUS HEADER (User Request) */
+        header>div:last-child {
+            display: none !important;
+        }
+
+        /* Copyright Footer Mobile */
+        #gm-footer {
+            display: block;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-size: 8px;
+            /* Smaller for mobile */
+            line-height: 1.3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 40px 20px 20px 20px;
+            /* Pad top to separate from controls */
+            pointer-events: none;
         }
     </style>
 
@@ -193,6 +214,13 @@
         })();
     </script>
     <div id="root"></div>
+
+    <div id="gm-footer">
+        © ALL RIGHTS RESERVED.<br>
+        ALL CONTENT, DESIGNS, CONCEPTS, VISUALS, IMAGES, SPATIAL WORKS, DIGITAL ASSETS, AND RELATED MATERIALS ARE THE
+        EXCLUSIVE INTELLECTUAL PROPERTY OF IICOMBINED CORP. AND GENTLE MONSTER.<br>
+        UNAUTHORIZED USE, REPRODUCTION, MODIFICATION, OR DISTRIBUTION IS STRICTLY PROHIBITED.
+    </div>
 </body>
 
 </html>
