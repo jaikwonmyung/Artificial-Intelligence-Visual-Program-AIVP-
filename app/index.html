@@ -6,6 +6,13 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <script>
+    // Simple Mobile Detection & Redirect
+    if (window.innerWidth <= 768 && !window.location.href.includes('mobile.html')) {
+      // Prevent redirect loop if user specifically requests desktop (optional feature)
+      window.location.href = '/mobile.html';
+    }
+  </script>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="GM AI" />
   <meta name="mobile-web-app-capable" content="yes">
@@ -23,6 +30,11 @@
     html {
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior: none;
+    }
+
+    /* Mobile Redirect */
+    @media (max-width: 768px) {
+      /* Redirect logic to be handled by JS, but css can hints */
     }
 
     body {
