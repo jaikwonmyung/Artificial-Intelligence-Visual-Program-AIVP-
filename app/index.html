@@ -23,25 +23,22 @@
     #gm-footer {
       position: fixed;
       bottom: 20px;
-      right: 40px;
-      /* Align to right */
-      left: auto;
-      /* Remove full width constraint */
-      width: auto;
-      text-align: right;
-      /* Text alignment */
-      color: #666;
-      /* Lighter for better visibility on black */
+      left: 0;
+      width: 100%;
+      text-align: center;
+      /* Center Aligned */
+      color: #333;
+      /* Dark/Subtle (Dim on black) */
       font-family: 'Inter', sans-serif;
       font-size: 9px;
       line-height: 1.4;
       z-index: 9999;
-      /* Ensure on top but not blocking clicks */
       pointer-events: none;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      mix-blend-mode: difference;
-      /* Optional: Cool effect for text over images? Or just safe gray */
+      white-space: nowrap;
+      /* Force 1 line */
+      opacity: 0.7;
     }
   </style>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -185,12 +182,6 @@
       btn.addEventListener('click', checkPass);
     })();
   </script>
-  <div id="gm-footer">
-    © ALL RIGHTS RESERVED.<br>
-    ALL CONTENT, DESIGNS, CONCEPTS, VISUALS, IMAGES, SPATIAL WORKS, DIGITAL ASSETS, AND RELATED MATERIALS ARE THE
-    EXCLUSIVE INTELLECTUAL PROPERTY OF IICOMBINED CORP. AND GENTLE MONSTER.<br>
-    UNAUTHORIZED USE, REPRODUCTION, MODIFICATION, OR DISTRIBUTION IS STRICTLY PROHIBITED.
-  </div>
   <div id="root"></div>
 </body>
 
