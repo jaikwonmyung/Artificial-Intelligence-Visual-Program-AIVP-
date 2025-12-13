@@ -70,64 +70,78 @@
       background: #555;
     }
 
-    /* MOBILE UI PATCH */
+    /* MOBILE UI PATCH V2 - Drawer Mode */
     @media (max-width: 768px) {
 
-      /* Force Vertical Layout */
+      /* 1. Main Container: Keep flex but hide sidebar by default */
       #root>div {
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: 100vh;
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
       }
 
-      /* Sidebar (Top) */
+      /* 2. Sidebar (Hidden by default, becomes Modal) */
       #root>div>div:first-child {
+        display: none;
+        /* JS will toggle this to 'flex' */
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.98);
         width: 100% !important;
-        height: auto !important;
-        max-height: none !important;
-        border-right: none !important;
-        border-bottom: 1px solid #333;
-        padding-bottom: 2rem;
-        background: #000;
-        z-index: 10;
+        height: 100% !important;
+        flex-direction: column;
+        padding: 40px 20px 100px 20px;
+        /* Check padding for notch */
+        overflow-y: auto;
+        /* Scrollable content */
       }
 
-      /* Content (Bottom) */
+      /* 3. Content (Full Screen Image) */
       #root>div>div:last-child {
         width: 100% !important;
-        height: 60vh !important;
-        /* Give space for image */
-        min-height: 400px;
+        height: 100% !important;
+        padding: 0 !important;
       }
 
-      /* Typography Boost */
+      /* Typography Reset for Mobile */
       html,
       body {
-        font-size: 16px;
-        /* Base size increase */
+        font-size: 14px;
       }
 
-      /* Make inputs and buttons touch-friendly */
+      /* Specific override for the Seed Input container if it exists */
+      /* Trying to prevent explosion */
       input,
-      button,
-      select,
-      textarea {
-        font-size: 16px !important;
-        /* Prevent zoom */
-        min-height: 44px;
+      button {
+        max-width: 100%;
       }
+    }
 
-      /* Adjust spacing */
-      .p-4,
-      .p-6,
-      .p-8 {
-        padding: 1rem !important;
-      }
+    /* Floating Action Button Style */
+    #mobile-menu-btn {
+      display: none;
+    }
 
-      .gap-4,
-      .gap-6,
-      .gap-8 {
-        gap: 1rem !important;
+    @media (max-width: 768px) {
+      #mobile-menu-btn {
+        display: flex;
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        background: white;
+        color: black;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-family: 'GentleMonsterSerif', serif;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
       }
     }
   </style>
@@ -202,6 +216,51 @@
 
       btn.addEventListener('click', checkPass);
     })();
+  </script>
+
+  <!-- Mobile Drawer Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create Floating Button
+      const menuBtn = document.createElement('button');
+      menuBtn.id = 'mobile-menu-btn';
+      menuBtn.innerHTML = '<span>MENU</span>';
+      document.body.appendChild(menuBtn);
+
+      let isOpen = false;
+
+      // Wait for React to mount and give us elements
+      setTimeout(() => {
+        const rootDiv = document.querySelector('#root > div');
+        if (!rootDiv) return;
+
+        const sidebar = rootDiv.firstChild;
+        if (!sidebar) return;
+
+        // Toggle Function
+        menuBtn.addEventListener('click', () => {
+          isOpen = !isOpen;
+          if (isOpen) {
+            sidebar.style.display = 'flex';
+            sidebar.style.animation = 'fadeIn 0.3s';
+            menuBtn.innerHTML = '<span>CLOSE</span>';
+            menuBtn.style.background = '#333';
+            menuBtn.style.color = 'white';
+          } else {
+            sidebar.style.display = 'none';
+            menuBtn.innerHTML = '<span>MENU</span>';
+            menuBtn.style.background = 'white';
+            menuBtn.style.color = 'black';
+          }
+        });
+
+        // Close when clicking inside content (optional)
+        // sidebar.addEventListener('click', (e) => {
+        //   if(e.target === sidebar) menuBtn.click();
+        // });
+
+      }, 1000); // 1 sec delay to ensure React loads
+    });
   </script>
   <div id="root"></div>
 </body>
