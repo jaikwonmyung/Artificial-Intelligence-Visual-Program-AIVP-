@@ -69,6 +69,67 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #555;
     }
+
+    /* MOBILE UI PATCH */
+    @media (max-width: 768px) {
+
+      /* Force Vertical Layout */
+      #root>div {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh;
+      }
+
+      /* Sidebar (Top) */
+      #root>div>div:first-child {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid #333;
+        padding-bottom: 2rem;
+        background: #000;
+        z-index: 10;
+      }
+
+      /* Content (Bottom) */
+      #root>div>div:last-child {
+        width: 100% !important;
+        height: 60vh !important;
+        /* Give space for image */
+        min-height: 400px;
+      }
+
+      /* Typography Boost */
+      html,
+      body {
+        font-size: 16px;
+        /* Base size increase */
+      }
+
+      /* Make inputs and buttons touch-friendly */
+      input,
+      button,
+      select,
+      textarea {
+        font-size: 16px !important;
+        /* Prevent zoom */
+        min-height: 44px;
+      }
+
+      /* Adjust spacing */
+      .p-4,
+      .p-6,
+      .p-8 {
+        padding: 1rem !important;
+      }
+
+      .gap-4,
+      .gap-6,
+      .gap-8 {
+        gap: 1rem !important;
+      }
+    }
   </style>
 
   <script type="importmap">
