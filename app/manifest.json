@@ -1,0 +1,21 @@
+{
+  "name": "Gentle Monster AI",
+  "short_name": "GM AI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn.shopify.com/s/files/1/0002/7600/4923/files/Gentle_Monster_Logo_Black.png?v=1614320000",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn.shopify.com/s/files/1/0002/7600/4923/files/Gentle_Monster_Logo_Black.png?v=1614320000",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
