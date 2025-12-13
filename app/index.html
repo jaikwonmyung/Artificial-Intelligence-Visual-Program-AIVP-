@@ -22,19 +22,26 @@
     /* Copyright Footer */
     #gm-footer {
       position: fixed;
-      bottom: 15px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      color: #444;
+      bottom: 20px;
+      right: 40px;
+      /* Align to right */
+      left: auto;
+      /* Remove full width constraint */
+      width: auto;
+      text-align: right;
+      /* Text alignment */
+      color: #666;
+      /* Lighter for better visibility on black */
       font-family: 'Inter', sans-serif;
       font-size: 9px;
       line-height: 1.4;
-      z-index: 50;
+      z-index: 9999;
+      /* Ensure on top but not blocking clicks */
       pointer-events: none;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 0 20px;
+      mix-blend-mode: difference;
+      /* Optional: Cool effect for text over images? Or just safe gray */
     }
   </style>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
