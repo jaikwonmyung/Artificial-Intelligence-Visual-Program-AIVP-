@@ -28,7 +28,7 @@ const NavBar: React.FC<NavBarProps> = ({ onReset }) => {
                 <div className="flex items-center gap-4 lg:gap-6">
                     <div className="text-right hidden sm:block">
                         <p className="text-[9px] text-zinc-600 font-mono tracking-widest uppercase">
-                            ENGINE v2.5.0 <span className="text-zinc-800 mx-1">|</span> 2025.12.09
+                            ENGINE v1.0.0 <span className="text-zinc-800 mx-1">|</span> 2025.12.15
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
