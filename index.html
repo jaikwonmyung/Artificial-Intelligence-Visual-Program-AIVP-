@@ -127,63 +127,25 @@
 </head>
 
 <body>
-  <!-- Logout Button (Hidden by default, shown by Observer) -->
-  <div id="logout-btn"
-    style="display: none; position: fixed; top: 30px; right: 30px; font-family: 'Inter', sans-serif; font-size: 11px; color: #666; cursor: pointer; z-index: 10000; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s;"
-    onmouseover="this.style.color='white'; this.style.opacity='1'"
-    onmouseout="this.style.color='#666'; this.style.opacity='0.7'"
-    onclick="if(confirm('LOGOUT? This will reset the app.')){localStorage.removeItem('gemini_api_key');sessionStorage.removeItem('gm_auth');window.location.reload();}">
-    LOGOUT
-  </div>
-
-  <!-- Auth Overlay -->
+  <!-- Password Protection Overlay -->
   <div id="auth-overlay"
     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+    <div style="font-family: 'GentleMonsterSerif', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 2px;">
+      GENTLE MONSTER</div>
+    <div
+      style="font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 1px; color: #666; margin-bottom: 3rem; text-transform: uppercase;">
+      Space Team Access</div>
 
-    <!-- PHASE 1: PASSWORD -->
-    <div id="phase-1" style="display: flex; flex-direction: column; align-items: center;">
-      <div style="font-family: 'GentleMonsterSerif', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 2px;">
-        GENTLE MONSTER</div>
-      <div
-        style="font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 1px; color: #666; margin-bottom: 3rem; text-transform: uppercase;">
-        Space Team Access</div>
-
-      <div style="width: 300px; display: flex; align-items: center; border-bottom: 1px solid #333;">
-        <input type="password" id="pass-input" placeholder="ENTER PASSWORD"
-          style="flex: 1; background: transparent; border: none; color: white; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; text-align: center; border-radius: 0; -webkit-appearance: none; appearance: none;">
-        <button id="pass-btn"
-          style="background: transparent; border: none; color: white; padding: 10px; cursor: pointer; font-size: 1.2rem;">→</button>
-      </div>
-      <div id="pass-error"
-        style="color: #ff3333; font-size: 0.7rem; margin-top: 10px; opacity: 0; transition: opacity 0.3s;">INCORRECT
-        PASSWORD</div>
+    <div
+      style="width: 100%; max-width: 300px; position: relative; display: flex; align-items: center; border-bottom: 1px solid #333;">
+      <input type="password" id="pass-input" placeholder="ENTER PASSWORD"
+        style="flex: 1; background: transparent; border: none; color: white; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; text-align: center; border-radius: 0; -webkit-appearance: none; appearance: none;">
+      <button id="auth-btn"
+        style="background: transparent; border: none; color: white; padding: 10px; cursor: pointer; font-size: 1.2rem;">→</button>
     </div>
-
-    <!-- PHASE 2: API KEY -->
-    <div id="phase-2" style="display: none; flex-direction: column; align-items: center;">
-      <div
-        style="font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 1px; color: #666; margin-bottom: 2rem; text-transform: uppercase;">
-        API KEY REQUIRED</div>
-
-      <div
-        style="width: 300px; display: flex; align-items: center; border-bottom: 1px solid #333; margin-bottom: 2rem;">
-        <input type="password" id="key-input" placeholder="ENTER GOOGLE AI KEY"
-          style="flex: 1; background: transparent; border: none; color: white; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; text-align: center; border-radius: 0; -webkit-appearance: none; appearance: none;">
-        <button id="key-btn"
-          style="background: transparent; border: none; color: white; padding: 10px; cursor: pointer; font-size: 1.2rem;">→</button>
-      </div>
-
-      <a href="https://aistudio.google.com/app/apikey" target="_blank"
-        style="font-family: 'Inter', sans-serif; font-size: 10px; color: #444; text-decoration: none; border: 1px solid #333; padding: 8px 16px; border-radius: 4px; transition: all 0.3s; letter-spacing: 1px;"
-        onmouseover="this.style.color='white'; this.style.borderColor='white'"
-        onmouseout="this.style.color='#444'; this.style.borderColor='#333'">
-        GET API KEY
-      </a>
-      <div id="key-error"
-        style="color: #ff3333; font-size: 0.7rem; margin-top: 10px; opacity: 0; transition: opacity 0.3s;">INVALID KEY
-        FORMAT</div>
-    </div>
-
+    <div id="error-msg"
+      style="color: #ff3333; font-size: 0.7rem; margin-top: 10px; text-align: center; opacity: 0; transition: opacity 0.3s;">
+      INCORRECT PASSWORD</div>
   </div>
 
   <div id="gm-footer">
@@ -194,96 +156,40 @@
 
   <script>
     (function () {
-      const logoutBtn = document.getElementById('logout-btn');
-      const root = document.getElementById('root');
-
-      // Observer to show logout button ONLY on Create/Render page
-      // We look for specific keywords that appear on that page
-      const observer = new MutationObserver(() => {
-        const text = root.innerText || "";
-        // Check for unique text on the Create/Render landing page
-        // "SPATIAL SYNTHESIS" and "PHOTOREAL ENGINE" are the subtitles in the design
-        const isLandingPage = text.includes("SPATIAL SYNTHESIS") || text.includes("PHOTOREAL ENGINE") || (text.includes("CREATE") && text.includes("RENDER"));
-
-        if (isLandingPage) {
-          logoutBtn.style.display = 'block';
-        } else {
-          logoutBtn.style.display = 'none';
-        }
-      });
-
-      observer.observe(root, { childList: true, subtree: true, characterData: true });
-
-      // --- Auth Logic (unchanged) ---
       const overlay = document.getElementById('auth-overlay');
-      const phase1 = document.getElementById('phase-1');
-      const phase2 = document.getElementById('phase-2');
-
-      const passInput = document.getElementById('pass-input');
-      const passBtn = document.getElementById('pass-btn');
-      const passError = document.getElementById('pass-error');
-
-      const keyInput = document.getElementById('key-input');
-      const keyBtn = document.getElementById('key-btn');
-      const keyError = document.getElementById('key-error');
-
+      const input = document.getElementById('pass-input');
+      const btn = document.getElementById('auth-btn');
+      const errorMsg = document.getElementById('error-msg');
       const CORRECT_PASS = 'spaceteam';
-      const AUTH_KEY = 'gm_auth';
-      const API_STORAGE_KEY = 'gemini_api_key';
 
-      function showPhase1() {
-        phase1.style.display = 'flex';
-        phase2.style.display = 'none';
-        passInput.focus();
-      }
-
-      function showPhase2() {
-        console.log('Showing Phase 2');
-        phase1.style.setProperty('display', 'none', 'important');
-        phase2.style.setProperty('display', 'flex', 'important');
-        keyInput.focus();
+      // Check if already authenticated in this session
+      if (sessionStorage.getItem('gm_auth') === 'true') {
+        overlay.style.display = 'none';
       }
 
       function checkPass() {
-        const inputVal = passInput.value.toLowerCase().trim();
-        console.log('Checking pass:', inputVal);
-
-        // Case-insensitive check
-        if (inputVal === CORRECT_PASS) {
-          console.log('Pass correct');
-          try {
-            sessionStorage.setItem(AUTH_KEY, 'true');
-          } catch (e) { console.error('Storage error', e); }
-          showPhase2();
+        if (input.value === CORRECT_PASS) {
+          sessionStorage.setItem('gm_auth', 'true');
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'opacity 0.5s ease';
+          setTimeout(() => { overlay.style.display = 'none'; }, 500);
+          input.blur(); // Hide keyboard
         } else {
-          console.log('Pass incorrect');
-          passError.style.opacity = '1';
-          passInput.value = '';
-          setTimeout(() => { passError.style.opacity = '0'; }, 2000);
+          errorMsg.style.opacity = '1';
+          input.value = '';
+          setTimeout(() => { errorMsg.style.opacity = '0'; }, 2000);
         }
       }
 
-      function saveKey() {
-        const val = keyInput.value.trim();
-        if (val.length > 10) { // Simple validation
-          localStorage.setItem(API_STORAGE_KEY, val);
-          unlockApp();
-          window.location.reload(); // Reload to let React pick up the key
-        } else {
-          keyError.style.opacity = '1';
-          setTimeout(() => { keyError.style.opacity = '0'; }, 2000);
-        }
-      }
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkPass();
+      });
 
-      passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkPass(); });
-      passBtn.addEventListener('click', checkPass);
-
-      keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveKey(); });
-      keyBtn.addEventListener('click', saveKey);
-
+      btn.addEventListener('click', checkPass);
     })();
   </script>
   <div id="root"></div>
 </body>
 
+</html>
 ```
