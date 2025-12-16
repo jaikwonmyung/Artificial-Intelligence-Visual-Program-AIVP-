@@ -238,38 +238,25 @@
       }
 
       function showPhase2() {
-        phase1.style.display = 'none';
-        phase2.style.display = 'flex';
+        console.log('Showing Phase 2');
+        phase1.style.setProperty('display', 'none', 'important');
+        phase2.style.setProperty('display', 'flex', 'important');
         keyInput.focus();
       }
 
-      function unlockApp() {
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => { overlay.style.display = 'none'; }, 500);
-      }
-
-      // INIT CHECK
-      const isAuth = sessionStorage.getItem(AUTH_KEY) === 'true';
-      const hasKey = localStorage.getItem(API_STORAGE_KEY);
-
-      if (isAuth) {
-        if (hasKey) {
-          overlay.style.display = 'none'; // Already fully authorized
-        } else {
-          showPhase2(); // Password done, need key
-        }
-      } else {
-        showPhase1(); // Need password
-      }
-
-      // LOGIC
       function checkPass() {
+        const inputVal = passInput.value.toLowerCase().trim();
+        console.log('Checking pass:', inputVal);
+
         // Case-insensitive check
-        if (passInput.value.toLowerCase().trim() === CORRECT_PASS) {
-          sessionStorage.setItem(AUTH_KEY, 'true');
+        if (inputVal === CORRECT_PASS) {
+          console.log('Pass correct');
+          try {
+            sessionStorage.setItem(AUTH_KEY, 'true');
+          } catch (e) { console.error('Storage error', e); }
           showPhase2();
         } else {
+          console.log('Pass incorrect');
           passError.style.opacity = '1';
           passInput.value = '';
           setTimeout(() => { passError.style.opacity = '0'; }, 2000);
