@@ -127,9 +127,9 @@
 </head>
 
 <body>
-  <!-- Logout Button -->
+  <!-- Logout Button (Hidden by default, shown by Observer) -->
   <div id="logout-btn"
-    style="position: fixed; top: 30px; right: 30px; font-family: 'Inter', sans-serif; font-size: 11px; color: #666; cursor: pointer; z-index: 10000; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s;"
+    style="display: none; position: fixed; top: 30px; right: 30px; font-family: 'Inter', sans-serif; font-size: 11px; color: #666; cursor: pointer; z-index: 10000; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s;"
     onmouseover="this.style.color='white'; this.style.opacity='1'"
     onmouseout="this.style.color='#666'; this.style.opacity='0.7'"
     onclick="if(confirm('LOGOUT? This will reset the app.')){localStorage.removeItem('gemini_api_key');sessionStorage.removeItem('gm_auth');window.location.reload();}">
@@ -194,6 +194,27 @@
 
   <script>
     (function () {
+      const logoutBtn = document.getElementById('logout-btn');
+      const root = document.getElementById('root');
+
+      // Observer to show logout button ONLY on Create/Render page
+      // We look for specific keywords that appear on that page
+      const observer = new MutationObserver(() => {
+        const text = root.innerText || "";
+        // Check for unique text on the Create/Render landing page
+        // "SPATIAL SYNTHESIS" and "PHOTOREAL ENGINE" are the subtitles in the design
+        const isLandingPage = text.includes("SPATIAL SYNTHESIS") || text.includes("PHOTOREAL ENGINE") || (text.includes("CREATE") && text.includes("RENDER"));
+
+        if (isLandingPage) {
+          logoutBtn.style.display = 'block';
+        } else {
+          logoutBtn.style.display = 'none';
+        }
+      });
+
+      observer.observe(root, { childList: true, subtree: true, characterData: true });
+
+      // --- Auth Logic (unchanged) ---
       const overlay = document.getElementById('auth-overlay');
       const phase1 = document.getElementById('phase-1');
       const phase2 = document.getElementById('phase-2');
