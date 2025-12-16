@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <script>
+    // Simple Mobile Detection & Redirect
+    if (window.innerWidth <= 768 && !window.location.href.includes('mobile.html')) {
+      // Prevent redirect loop if user specifically requests desktop (optional feature)
+      window.location.href = '/mobile.html';
+    }
+  </script>
+  <style>
+    /* HIDE STATUS HEADER (User Request) */
+    header>div:last-child {
+      display: none !important;
+    }
+
+    /* Copyright Footer */
+    #gm-footer {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      /* Center Aligned */
+      color: #333;
+      /* Dark/Subtle (Dim on black) */
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      line-height: 1.4;
+      z-index: 9999;
+      pointer-events: none;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      /* Force 1 line */
+      opacity: 0.7;
+    }
+  </style>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GM AI" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <link rel="manifest" href="./manifest.json" />
+
+  <title>Gentle Monster AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    /* Mobile App Optimizations */
+    html {
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+
+    /* Mobile Redirect */
+    @media (max-width: 768px) {
+      /* Redirect logic to be handled by JS, but css can hints */
+    }
+
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    input,
+    textarea {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
+
+    @font-face {
+      font-family: 'GentleMonsterSerif';
+      src: url('/GentleMonsterSerif-Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'GentleMonsterSerif', sans-serif;
+      background-color: #000000;
+      color: #e4e4e7;
+    }
+
+    /* Custom Scrollbar for Minimalist feel */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 0px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index--MSCwbGc.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C9xhdpiy.css">
+</head>
+
+<body>
+  <!-- Password Protection Overlay -->
+  <div id="auth-overlay"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+    <div style="font-family: 'GentleMonsterSerif', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 2px;">
+      GENTLE MONSTER</div>
+    <div
+      style="font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 1px; color: #666; margin-bottom: 3rem; text-transform: uppercase;">
+      Space Team Access</div>
+
+    <div
+      style="width: 100%; max-width: 300px; position: relative; display: flex; align-items: center; border-bottom: 1px solid #333;">
+      <input type="password" id="pass-input" placeholder="ENTER PASSWORD"
+        style="flex: 1; background: transparent; border: none; color: white; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; text-align: center; border-radius: 0; -webkit-appearance: none; appearance: none;">
+      <button id="auth-btn"
+        style="background: transparent; border: none; color: white; padding: 10px; cursor: pointer; font-size: 1.2rem;">→</button>
+    </div>
+    <div id="error-msg"
+      style="color: #ff3333; font-size: 0.7rem; margin-top: 10px; text-align: center; opacity: 0; transition: opacity 0.3s;">
+      INCORRECT PASSWORD</div>
+  </div>
+
+  <script>
+    (function () {
+      const overlay = document.getElementById('auth-overlay');
+      const input = document.getElementById('pass-input');
+      const btn = document.getElementById('auth-btn');
+      const errorMsg = document.getElementById('error-msg');
+      const CORRECT_PASS = 'spaceteam';
+
+      // Check if already authenticated in this session
+      if (sessionStorage.getItem('gm_auth') === 'true') {
+        overlay.style.display = 'none';
+      }
+
+      function checkPass() {
+        if (input.value === CORRECT_PASS) {
+          sessionStorage.setItem('gm_auth', 'true');
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'opacity 0.5s ease';
+          setTimeout(() => { overlay.style.display = 'none'; }, 500);
+          input.blur(); // Hide keyboard
+        } else {
+          errorMsg.style.opacity = '1';
+          input.value = '';
+          setTimeout(() => { errorMsg.style.opacity = '0'; }, 2000);
+        }
+      }
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkPass();
+      });
+
+      btn.addEventListener('click', checkPass);
+    })();
+  </script>
+  <div id="root"></div>
+</body>
+
+</html>
+```
