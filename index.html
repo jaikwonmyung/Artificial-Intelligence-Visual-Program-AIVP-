@@ -265,7 +265,8 @@
 
       // LOGIC
       function checkPass() {
-        if (passInput.value === CORRECT_PASS) {
+        // Case-insensitive check
+        if (passInput.value.toLowerCase().trim() === CORRECT_PASS) {
           sessionStorage.setItem(AUTH_KEY, 'true');
           showPhase2();
         } else {
