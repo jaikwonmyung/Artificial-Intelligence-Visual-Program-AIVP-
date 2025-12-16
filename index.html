@@ -128,6 +128,13 @@
 
 <body>
   <!-- Password Protection Overlay -->
+  <div id="logout-btn"
+    style="position: fixed; top: 30px; right: 30px; font-family: 'Inter', sans-serif; font-size: 11px; color: #666; cursor: pointer; z-index: 10000; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s;"
+    onmouseover="this.style.color='white'; this.style.opacity='1'"
+    onmouseout="this.style.color='#666'; this.style.opacity='0.7'"
+    onclick="if(confirm('LOGOUT? This will reset the app.')){localStorage.clear();sessionStorage.clear();window.location.reload();}">
+    LOGOUT
+  </div>
   <div id="auth-overlay"
     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
     <div style="font-family: 'GentleMonsterSerif', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 2px;">
@@ -152,11 +159,6 @@
     © ALL RIGHTS RESERVED. ALL CONTENT, DESIGNS, CONCEPTS, VISUALS, IMAGES, SPATIAL WORKS, DIGITAL ASSETS, AND RELATED
     MATERIALS ARE THE EXCLUSIVE INTELLECTUAL PROPERTY OF IICOMBINED CORP. AND GENTLE MONSTER. UNAUTHORIZED USE,
     REPRODUCTION, MODIFICATION, OR DISTRIBUTION IS STRICTLY PROHIBITED.
-    <br><br>
-    <span style="cursor: pointer; text-decoration: underline; color: #666;"
-      onclick="if(confirm('API 키를 변경하시겠습니까? 앱이 초기화됩니다.')){localStorage.clear();sessionStorage.clear();window.location.reload();}">
-      [ API 키 재설정 ]
-    </span>
   </div>
 
   <script>
