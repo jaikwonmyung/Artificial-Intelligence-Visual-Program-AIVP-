@@ -6,13 +6,7 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <script>
-    // Simple Mobile Detection & Redirect
-    if (window.innerWidth <= 768 && !window.location.href.includes('mobile.html')) {
-      // Prevent redirect loop if user specifically requests desktop (optional feature)
-      window.location.href = '/mobile.html';
-    }
-  </script>
+
   <style>
     /* HIDE STATUS HEADER (User Request) */
     header>div:last-child {
@@ -124,6 +118,13 @@
 </script>
   <script type="module" crossorigin src="/assets/index--MSCwbGc.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-C9xhdpiy.css">
+
+  <!-- CORE LOADER: Auth, Redirect, UI Injection -->
+  <script src="/assets/gm-loader.js?v=2.0" defer></script>
+  <script>
+    // Legacy redirect fallback (optional, can be removed if loader works 100%)
+    // But we prefer the loader to handle it.
+  </script>
 </head>
 
 <body>
@@ -154,147 +155,7 @@
     REPRODUCTION, MODIFICATION, OR DISTRIBUTION IS STRICTLY PROHIBITED.
   </div>
 
-  <script>
-    (function () {
-      // 1. Password Overlay Logic
-      const overlay = document.getElementById('auth-overlay');
-      const input = document.getElementById('pass-input');
-      const btn = document.getElementById('auth-btn');
-      const errorMsg = document.getElementById('error-msg');
-      const CORRECT_PASS = 'spaceteam';
-
-      // Check if already authenticated
-      if (sessionStorage.getItem('gm_auth') === 'true') {
-        overlay.style.display = 'none';
-        observeRoot(); // Start observing immediately if already authed
-      }
-
-      function checkPass() {
-        if (input.value === CORRECT_PASS) {
-          sessionStorage.setItem('gm_auth', 'true');
-          overlay.style.opacity = '0';
-          overlay.style.transition = 'opacity 0.5s ease';
-          setTimeout(() => { overlay.style.display = 'none'; }, 500);
-          input.blur();
-          observeRoot(); // Start observing after auth
-        } else {
-          errorMsg.style.opacity = '1';
-          input.value = '';
-          setTimeout(() => { errorMsg.style.opacity = '0'; }, 2000);
-        }
-      }
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') checkPass();
-      });
-
-      btn.addEventListener('click', checkPass);
-
-      // 3. Inject "LOGOUT" Button Logic (CREATE / RENDER Page)
-      function observeRoot() {
-        // Ensure root exists before observing
-        const root = document.getElementById('root');
-        if (!root) {
-          // If root doesn't exist yet (script ran too early), wait for it
-          setTimeout(observeRoot, 100);
-          return;
-        }
-
-        // Debounce
-        let timeout;
-        const observer = new MutationObserver((mutations) => {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => {
-            runInjectionLogic();
-          }, 200);
-        });
-
-        function runInjectionLogic() {
-          const allElements = document.body.querySelectorAll('*');
-
-          let apiInputContainer = null;
-          let createFound = false;
-          let renderFound = false;
-
-          for (const el of allElements) {
-            if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'INPUT', 'TEXTAREA'].includes(el.tagName)) continue;
-
-            // Get text - Use includes and length check to find the specific label element
-            const text = el.textContent ? el.textContent.trim().toUpperCase() : '';
-            const isShortText = text.length > 0 && text.length < 50; // Heuristic to find label, not container
-
-            // 1. Detect AI STUDIO Page
-            if (isShortText && text.includes('AI STUDIO')) {
-              // Found the label. Iterate up to find a suitable container if needed, 
-              // but usually appending to the parent of the label is best.
-              // We pick the last valid match to avoid 'AI STUDIO' title in header if there is one? 
-              // Actually the input is usually below the main header.
-              apiInputContainer = el.parentElement;
-            }
-
-            // 2. Detect CREATE / RENDER Selection Page
-            if (isShortText && text === 'CREATE') createFound = true;
-            if (isShortText && text === 'RENDER') renderFound = true;
-          }
-
-          // A. Inject GET API KEY Button
-          if (apiInputContainer) {
-            if (!document.getElementById('get-api-key-btn')) {
-              console.log('GM: Injecting API Key button into found container');
-              const linkBtn = document.createElement('a');
-              linkBtn.id = 'get-api-key-btn';
-              linkBtn.href = 'https://aistudio.google.com/app/apikey';
-              linkBtn.target = '_blank';
-              linkBtn.textContent = 'GET API KEY →';
-              linkBtn.style.cssText = `
-                    display: block; margin-top: 15px; color: #666; font-family: 'Inter', sans-serif;
-                    font-size: 10px; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;
-                    text-align: center; border: 1px solid #333; padding: 8px; width: 100%; max-width: 300px;
-                    background: #000; transition: all 0.2s; cursor: pointer; position: relative; z-index: 100;
-                 `;
-              linkBtn.addEventListener('mouseenter', () => { linkBtn.style.color = '#fff'; linkBtn.style.borderColor = '#666'; });
-              linkBtn.addEventListener('mouseleave', () => { linkBtn.style.color = '#666'; linkBtn.style.borderColor = '#333'; });
-
-              // Append to container
-              apiInputContainer.appendChild(linkBtn);
-            }
-          }
-
-          // B. Inject LOGOUT Button (Only if on Selection Page)
-          if (createFound && renderFound) {
-            if (!document.getElementById('gm-logout-btn')) {
-              console.log('GM: Injecting LOGOUT button.');
-              const logoutBtn = document.createElement('div');
-              logoutBtn.id = 'gm-logout-btn';
-              logoutBtn.textContent = 'LOGOUT';
-              logoutBtn.style.cssText = `
-                      position: fixed; top: 20px; right: 20px; color: #444; font-family: 'Inter', sans-serif;
-                      font-size: 10px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-                      z-index: 99999; padding: 8px 12px; border: 1px solid rgba(51,51,51,0.5);
-                      background: rgba(0,0,0,0.8); transition: all 0.2s;
-                  `;
-              logoutBtn.addEventListener('mouseenter', () => { logoutBtn.style.color = '#fff'; logoutBtn.style.borderColor = '#666'; });
-              logoutBtn.addEventListener('mouseleave', () => { logoutBtn.style.color = '#444'; logoutBtn.style.borderColor = '#333'; });
-
-              logoutBtn.addEventListener('click', () => {
-                if (confirm('Disconnect API Key & Logout?')) {
-                  sessionStorage.clear();
-                  localStorage.clear();
-                  window.location.reload();
-                }
-              });
-              document.body.appendChild(logoutBtn);
-            }
-          }
-        }
-
-        observer.observe(root, { childList: true, subtree: true, characterData: true });
-      }
-
-    })();
-  </script>
   <div id="root"></div>
 </body>
 
 </html>
-```
