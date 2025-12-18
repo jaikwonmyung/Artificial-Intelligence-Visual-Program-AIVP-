@@ -190,71 +190,70 @@
 
       btn.addEventListener('click', checkPass);
 
-      // 2. Inject "GET API KEY" Button Logic
+      // 3. Inject "LOGOUT" Button Logic (CREATE / RENDER Page)
       function observeRoot() {
         const observer = new MutationObserver((mutations) => {
-          // Look for the input field with "Enter Gemini API Key" or similar
-          // Since class names are hashed, we look for signature structure or placeholder
-          const apiInputs = document.querySelectorAll('input[type="password"]');
-          // Note: The main app input might be type="text" or "password", checking both or context
-          // Inspecting the "AI STUDIO" text context is safer if classes are unknown
-
-          // Strategy: Find "AI STUDIO" text, then find the input below it
+          // --- GET API KEY logic ---
           const allDivs = document.querySelectorAll('div');
           let aiStudioFound = false;
-          let targetContainer = null;
+          let apiInputContainer = null;
+
+          // --- LOGOUT Logic ---
+          let createFound = false;
+          let renderFound = false;
+          let selectionPageContainer = null;
 
           for (const div of allDivs) {
+            // Check for API Page
             if (div.textContent === 'AI STUDIO') {
-              // This is the header/label. The input usually follows.
               aiStudioFound = true;
-              // We want to append the button to the parent container of this text, 
-              // or the specific input container if distinct.
-              // Let's target the parent of the input that is nearby.
-              targetContainer = div.parentElement;
-              break;
+              apiInputContainer = div.parentElement;
             }
+            // Check for Selection Page
+            if (div.textContent === 'CREATE') createFound = true;
+            if (div.textContent === 'RENDER') renderFound = true;
           }
 
-          if (aiStudioFound && targetContainer && !document.getElementById('get-api-key-btn')) {
-            // Create Button
+          // A. Inject GET API KEY Button
+          if (aiStudioFound && apiInputContainer && !document.getElementById('get-api-key-btn')) {
             const linkBtn = document.createElement('a');
             linkBtn.id = 'get-api-key-btn';
             linkBtn.href = 'https://aistudio.google.com/app/apikey';
             linkBtn.target = '_blank';
             linkBtn.textContent = 'GET API KEY →';
             linkBtn.style.cssText = `
-                display: block;
-                margin-top: 15px;
-                color: #666;
-                font-family: 'Inter', sans-serif;
-                font-size: 10px;
-                text-decoration: none;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                text-align: center;
-                border: 1px solid #333;
-                padding: 8px;
-                width: 100%;
-                max-width: 300px;
-                background: #000;
-                transition: all 0.2s;
+                display: block; margin-top: 15px; color: #666; font-family: 'Inter', sans-serif;
+                font-size: 10px; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;
+                text-align: center; border: 1px solid #333; padding: 8px; width: 100%; max-width: 300px;
+                background: #000; transition: all 0.2s;
              `;
+            linkBtn.addEventListener('mouseenter', () => { linkBtn.style.color = '#fff'; linkBtn.style.borderColor = '#666'; });
+            linkBtn.addEventListener('mouseleave', () => { linkBtn.style.color = '#666'; linkBtn.style.borderColor = '#333'; });
+            apiInputContainer.appendChild(linkBtn);
+          }
 
-            // Hover effect
-            linkBtn.addEventListener('mouseenter', () => {
-              linkBtn.style.color = '#fff';
-              linkBtn.style.borderColor = '#666';
-            });
-            linkBtn.addEventListener('mouseleave', () => {
-              linkBtn.style.color = '#666';
-              linkBtn.style.borderColor = '#333';
-            });
+          // B. Inject LOGOUT Button (Only if on Selection Page)
+          if (createFound && renderFound && !document.getElementById('gm-logout-btn')) {
+            const logoutBtn = document.createElement('div');
+            logoutBtn.id = 'gm-logout-btn';
+            logoutBtn.textContent = 'LOGOUT';
+            logoutBtn.style.cssText = `
+                  position: fixed; top: 20px; right: 20px; color: #444; font-family: 'Inter', sans-serif;
+                  font-size: 10px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+                  z-index: 9999; padding: 8px 12px; border: 1px solid rgba(51,51,51,0.5);
+                  background: rgba(0,0,0,0.8); transition: all 0.2s;
+              `;
+            logoutBtn.addEventListener('mouseenter', () => { logoutBtn.style.color = '#fff'; logoutBtn.style.borderColor = '#666'; });
+            logoutBtn.addEventListener('mouseleave', () => { logoutBtn.style.color = '#444'; logoutBtn.style.borderColor = '#333'; });
 
-            // Append after the input container
-            // We need to find the input sibling. 
-            // If targetContainer contains AI STUDIO and the input, just append to bottom.
-            targetContainer.appendChild(linkBtn);
+            logoutBtn.addEventListener('click', () => {
+              if (confirm('Disconnect API Key & Logout?')) {
+                sessionStorage.clear();
+                localStorage.clear(); // Clear API key
+                window.location.reload();
+              }
+            });
+            document.body.appendChild(logoutBtn);
           }
         });
 
