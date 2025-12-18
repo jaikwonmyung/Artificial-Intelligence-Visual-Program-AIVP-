@@ -205,6 +205,7 @@
 
     <script>
         (function () {
+            // 1. Password Overlay Logic
             const overlay = document.getElementById('auth-overlay');
             const input = document.getElementById('pass-input');
             const btn = document.getElementById('auth-btn');
@@ -213,6 +214,7 @@
 
             if (sessionStorage.getItem('gm_auth') === 'true') {
                 overlay.style.display = 'none';
+                observeRoot(); // Start observing immediately if already authed
             }
 
             function checkPass() {
@@ -222,6 +224,7 @@
                     overlay.style.transition = 'opacity 0.5s ease';
                     setTimeout(() => { overlay.style.display = 'none'; }, 500);
                     input.blur();
+                    observeRoot(); // Start observing after auth
                 } else {
                     errorMsg.style.opacity = '1';
                     input.value = '';
@@ -233,6 +236,64 @@
                 if (e.key === 'Enter') checkPass();
             });
             btn.addEventListener('click', checkPass);
+
+            // 2. Inject "GET API KEY" Button Logic
+            function observeRoot() {
+                const observer = new MutationObserver((mutations) => {
+                    const allDivs = document.querySelectorAll('div');
+                    let aiStudioFound = false;
+                    let targetContainer = null;
+
+                    for (const div of allDivs) {
+                        if (div.textContent === 'AI STUDIO') {
+                            aiStudioFound = true;
+                            targetContainer = div.parentElement;
+                            break;
+                        }
+                    }
+
+                    if (aiStudioFound && targetContainer && !document.getElementById('get-api-key-btn')) {
+                        const linkBtn = document.createElement('a');
+                        linkBtn.id = 'get-api-key-btn';
+                        linkBtn.href = 'https://aistudio.google.com/app/apikey';
+                        linkBtn.target = '_blank';
+                        linkBtn.textContent = 'GET API KEY →';
+                        linkBtn.style.cssText = `
+                display: block;
+                margin-top: 20px;
+                color: #666;
+                font-family: 'Inter', sans-serif;
+                font-size: 11px;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                text-align: center;
+                border: 1px solid #333;
+                padding: 12px;
+                width: 100%;
+                max-width: 100%;
+                background: #000;
+                transition: all 0.2s;
+             `;
+
+                        linkBtn.addEventListener('mouseenter', () => {
+                            linkBtn.style.color = '#fff';
+                            linkBtn.style.borderColor = '#666';
+                        });
+                        linkBtn.addEventListener('mouseleave', () => {
+                            linkBtn.style.color = '#666';
+                            linkBtn.style.borderColor = '#333';
+                        });
+
+                        targetContainer.appendChild(linkBtn);
+                    }
+                });
+
+                const root = document.getElementById('root');
+                if (root) {
+                    observer.observe(root, { childList: true, subtree: true });
+                }
+            }
         })();
     </script>
     <div id="root"></div>
