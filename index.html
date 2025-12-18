@@ -192,7 +192,15 @@
 
       // 3. Inject "LOGOUT" Button Logic (CREATE / RENDER Page)
       function observeRoot() {
-        // Debounce to prevent performance issues
+        // Ensure root exists before observing
+        const root = document.getElementById('root');
+        if (!root) {
+          // If root doesn't exist yet (script ran too early), wait for it
+          setTimeout(observeRoot, 100);
+          return;
+        }
+
+        // Debounce
         let timeout;
         const observer = new MutationObserver((mutations) => {
           clearTimeout(timeout);
@@ -202,7 +210,6 @@
         });
 
         function runInjectionLogic() {
-          // Flatten all elements
           const allElements = document.body.querySelectorAll('*');
 
           let apiInputContainer = null;
@@ -210,29 +217,30 @@
           let renderFound = false;
 
           for (const el of allElements) {
-            // Avoid scripts/styles/inputs
             if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'INPUT', 'TEXTAREA'].includes(el.tagName)) continue;
 
-            // Get text
+            // Get text - Use includes and length check to find the specific label element
             const text = el.textContent ? el.textContent.trim().toUpperCase() : '';
+            const isShortText = text.length > 0 && text.length < 50; // Heuristic to find label, not container
 
             // 1. Detect AI STUDIO Page
-            // Look for LEAF node or specific label to avoid selecting the whole body
-            if (text.includes('AI STUDIO') && el.children.length === 0) {
-              console.log('GM: Found AI STUDIO text on:', el);
-              // Inject into the PARENT of the text label, or the text label itself if it's a block
+            if (isShortText && text.includes('AI STUDIO')) {
+              // Found the label. Iterate up to find a suitable container if needed, 
+              // but usually appending to the parent of the label is best.
+              // We pick the last valid match to avoid 'AI STUDIO' title in header if there is one? 
+              // Actually the input is usually below the main header.
               apiInputContainer = el.parentElement;
             }
 
             // 2. Detect CREATE / RENDER Selection Page
-            if (text === 'CREATE') createFound = true;
-            if (text === 'RENDER') renderFound = true;
+            if (isShortText && text === 'CREATE') createFound = true;
+            if (isShortText && text === 'RENDER') renderFound = true;
           }
 
           // A. Inject GET API KEY Button
           if (apiInputContainer) {
             if (!document.getElementById('get-api-key-btn')) {
-              console.log('GM: Injecting API Key button into', apiInputContainer);
+              console.log('GM: Injecting API Key button into found container');
               const linkBtn = document.createElement('a');
               linkBtn.id = 'get-api-key-btn';
               linkBtn.href = 'https://aistudio.google.com/app/apikey';
@@ -280,10 +288,7 @@
           }
         }
 
-        const root = document.getElementById('root');
-        if (root) {
-          observer.observe(root, { childList: true, subtree: true, characterData: true });
-        }
+        observer.observe(root, { childList: true, subtree: true, characterData: true });
       }
 
     })();
