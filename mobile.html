@@ -239,27 +239,30 @@
 
             // 3. Inject "LOGOUT" Button Logic (CREATE / RENDER Page)
             function observeRoot() {
+                // Debounce
+                let timeout;
                 const observer = new MutationObserver((mutations) => {
-                    // Flatten all elements to find text easier
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        runInjectionLogic();
+                    }, 200);
+                });
+
+                function runInjectionLogic() {
                     const allElements = document.body.querySelectorAll('*');
 
-                    let aiStudioFound = false;
                     let apiInputContainer = null;
-
                     let createFound = false;
                     let renderFound = false;
 
                     for (const el of allElements) {
-                        // Avoid scripts/styles
-                        if (['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(el.tagName)) continue;
+                        if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'INPUT', 'TEXTAREA'].includes(el.tagName)) continue;
 
-                        // Get direct text content if possible or just trimmed
-                        const text = el.textContent ? el.textContent.trim() : '';
+                        const text = el.textContent ? el.textContent.trim().toUpperCase() : '';
 
-                        // 1. Detect AI STUDIO Page
-                        if (text === 'AI STUDIO') {
-                            aiStudioFound = true;
-                            // Try to find the input container (usually parent or sibling)
+                        // 1. Detect AI STUDIO Page (Leaf node check)
+                        if (text.includes('AI STUDIO') && el.children.length === 0) {
+                            console.log('GM: Found AI STUDIO text on:', el);
                             apiInputContainer = el.parentElement;
                         }
 
@@ -269,9 +272,9 @@
                     }
 
                     // A. Inject GET API KEY Button
-                    if (aiStudioFound && apiInputContainer) {
+                    if (apiInputContainer) {
                         if (!document.getElementById('get-api-key-btn')) {
-                            console.log('GM: AI Studio page detected. Injecting API Key button.');
+                            console.log('GM: Injecting API Key button into', apiInputContainer);
                             const linkBtn = document.createElement('a');
                             linkBtn.id = 'get-api-key-btn';
                             linkBtn.href = 'https://aistudio.google.com/app/apikey';
@@ -281,7 +284,7 @@
                 display: block; margin-top: 20px; color: #666; font-family: 'Inter', sans-serif;
                 font-size: 11px; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;
                 text-align: center; border: 1px solid #333; padding: 12px; width: 100%; max-width: 100%;
-                background: #000; transition: all 0.2s; cursor: pointer;
+                background: #000; transition: all 0.2s; cursor: pointer; position: relative; z-index: 100;
              `;
                             linkBtn.addEventListener('mouseenter', () => { linkBtn.style.color = '#fff'; linkBtn.style.borderColor = '#666'; });
                             linkBtn.addEventListener('mouseleave', () => { linkBtn.style.color = '#666'; linkBtn.style.borderColor = '#333'; });
@@ -292,7 +295,7 @@
                     // B. Inject LOGOUT Button (Only if on Selection Page)
                     if (createFound && renderFound) {
                         if (!document.getElementById('gm-logout-btn')) {
-                            console.log('GM: Selection page detected (CREATE/RENDER). Injecting LOGOUT button.');
+                            console.log('GM: Injecting LOGOUT button.');
                             const logoutBtn = document.createElement('div');
                             logoutBtn.id = 'gm-logout-btn';
                             logoutBtn.textContent = 'LOGOUT';
@@ -315,7 +318,7 @@
                             document.body.appendChild(logoutBtn);
                         }
                     }
-                });
+                }
 
                 const root = document.getElementById('root');
                 if (root) {
