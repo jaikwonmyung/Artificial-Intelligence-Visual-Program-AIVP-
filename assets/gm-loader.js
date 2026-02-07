@@ -8,7 +8,7 @@
     'use strict';
 
     const CONFIG = {
-        password: 'spaceteam',
+        password: 'spicymama',
         mobileBreakpoint: 768,
         storageKey: 'gm_auth',
         redirectTarget: '/mobile.html'
