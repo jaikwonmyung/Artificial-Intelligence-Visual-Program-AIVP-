@@ -175,7 +175,7 @@
                 btn.addEventListener('click', () => {
                     if (confirm('Disconnect API Key & Logout?')) {
                         sessionStorage.removeItem(CONFIG.storageKey); // Clear session
-                        localStorage.removeItem('GEMINI_API_KEY'); // Clear API key if stored there (common convention)
+                        localStorage.removeItem('gemini_api_key'); // Clear stored API key (actual storage key)
                         // Also clear everything else to be safe
                         sessionStorage.clear();
                         localStorage.clear();
