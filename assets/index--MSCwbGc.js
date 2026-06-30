@@ -616,11 +616,12 @@ ${v}`)
     3. [HARMONIZATION]: Ensure lighting, shadows, and perspective of inserted assets match the designated spatial master.
     
     [OUTPUT FRAMING - CRITICAL SINGLE COMPOSITION]
-    Render the scene as ONE single, unified composition that fills the frame exactly once.
-    - DO NOT tile, stack, mirror, repeat, or duplicate the composition vertically or horizontally.
-    - DO NOT create a grid, split-screen, collage, or before/after rows of the same scene.
-    - Each distinct subject or object appears EXACTLY ONCE unless the [USER PROMPT] explicitly asks for multiples.
-    - If a reference image contains a diagram, arrow, or "input -> output" layout, treat it as guidance ONLY and output a single clean result, never a replicated or stacked diagram.
+    Produce EXACTLY ONE composition, arranged as a SINGLE horizontal row centered in the frame.
+    - The output is ONE scene only. It must NEVER be split into an upper half and a lower half, and must NEVER be repeated as two or more rows stacked top-to-bottom.
+    - DO NOT tile, stack, mirror, clone, grid, collage, or duplicate the scene or any subject. Leave empty space above and below the single row rather than filling it with a copy.
+    - Each distinct subject/object appears EXACTLY ONCE unless the [USER PROMPT] explicitly requests several different objects.
+    - If the references or the user's words mention duplication, stacking, "top/bottom", "위아래", or "remove duplicate / 중복 제거", interpret this as a STRONG instruction to output ONE single non-duplicated result - never reproduce the duplication.
+    - A reference diagram or arrow ("input -> output") defines the desired single layout; reproduce that one layout exactly once, never as repeated rows.
 
     [NEGATIVE CONSTRAINTS]
     STRICT GROUNDING: Do not invent objects not implied by the prompt. If the user asks for a 'face', do not add a 'hat' or 'glasses' unless specified.
