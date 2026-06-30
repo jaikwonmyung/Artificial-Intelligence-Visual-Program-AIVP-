@@ -8,7 +8,7 @@
     'use strict';
 
     const CONFIG = {
-        password: 'GMspace-943266!',
+        password: 'spicygirl',
         mobileBreakpoint: 768,
         storageKey: 'gm_auth',
         redirectTarget: '/mobile.html'
@@ -175,7 +175,7 @@
                 btn.addEventListener('click', () => {
                     if (confirm('Disconnect API Key & Logout?')) {
                         sessionStorage.removeItem(CONFIG.storageKey); // Clear session
-                        localStorage.removeItem('gemini_api_key'); // Clear stored API key (actual storage key)
+                        localStorage.removeItem('GEMINI_API_KEY'); // Clear API key if stored there (common convention)
                         // Also clear everything else to be safe
                         sessionStorage.clear();
                         localStorage.clear();
